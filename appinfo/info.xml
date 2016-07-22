@@ -7,9 +7,9 @@ While it is possible to manually change email templates within Nextcloud, this a
 </description>
 	<licence>AGPL</licence>
 	<author>Jörn Dreyer</author>
-	<version>0.1</version>
+	<version>0.2</version>
 	<dependencies>
-		<owncloud min-version="9.1" max-version="9.1" />
+		<owncloud min-version="9.2" max-version="9.2" />
 	</dependencies>
 	<shipped>true</shipped>
 	<default_enable/>
