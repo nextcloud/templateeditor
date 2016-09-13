@@ -124,8 +124,10 @@ class MailTemplate extends \OC_Template {
 					if (rename($absolutePath.'.bak', $absolutePath)) {
 						return true;
 					}
-				} else if (unlink($absolutePath)) {
-					return true;
+				} else if(file_exists($absolutePath)) {
+					if (unlink($absolutePath)) {
+						return true;
+					}
 				}
 			}
 			return !file_exists($absolutePath);
