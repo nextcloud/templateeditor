@@ -24,6 +24,7 @@
 namespace OCA\TemplateEditor;
 
 use OCA\TemplateEditor\Http\MailTemplateResponse;
+use OCP\App\AppPathNotFoundException;
 use OCP\Template;
 
 class MailTemplate extends Template  {
@@ -41,8 +42,8 @@ class MailTemplate extends Template  {
 	private $editableTemplates;
 
 	/**
-	 * @param string string $theme
-	 * @param string string $path
+	 * @param string $theme
+	 * @param string $path
 	 */
 	public function __construct($theme, $path) {
 		$this->theme = $theme;
@@ -165,11 +166,15 @@ class MailTemplate extends Template  {
 			'settings/templates/email.new_user_plain_text.php' => $l10n->t('New user email (plain text fallback)'),
 		);
 
-		if (\OCP\App::isEnabled('activity')) {
-			// Hack the code checker 🙈
-			$tmplPath = call_user_func('OC_App::getAppPath', 'activity') . '/templates/email.notification.php';
-			$path = substr($tmplPath, strlen(\OC::$SERVERROOT) + 1);
-			$templates[$path] = $l10n->t('Activity notification mail');
+		$appManager = \OC::$server->getAppManager();
+		if ($appManager->isEnabledForUser('activity')) {
+			try {
+				$tmplPath = $appManager->getAppPath('activity') . '/templates/email.notification.php';
+				$path = substr($tmplPath, strlen(\OC::$SERVERROOT) + 1);
+				$templates[$path] = $l10n->t('Activity notification mail');
+			} catch (AppPathNotFoundException $e) {
+				// App not found, ignore and go on
+			}
 		}
 
 		return $templates;
