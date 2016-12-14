@@ -7,8 +7,8 @@ While it is possible to manually change email templates within Nextcloud, this a
 </description>
 	<licence>AGPL</licence>
 	<author>Jörn Dreyer</author>
-	<version>0.2</version>
+	<version>0.3</version>
 	<dependencies>
-		<nextcloud min-version="11" max-version="11" />
+		<nextcloud min-version="12" max-version="12" />
 	</dependencies>
 </info>
