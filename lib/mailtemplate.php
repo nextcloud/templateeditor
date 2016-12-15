@@ -23,11 +23,11 @@
 
 namespace OCA\TemplateEditor;
 
-use OCP\Files\NotPermittedException;
-use OC\AppFramework\Middleware\Security\SecurityException;
 use OCA\TemplateEditor\Http\MailTemplateResponse;
+use OCP\App\AppPathNotFoundException;
+use OCP\Template;
 
-class MailTemplate extends \OC_Template {
+class MailTemplate extends Template  {
 
 	/** @var string */
 	private $path;
@@ -42,8 +42,8 @@ class MailTemplate extends \OC_Template {
 	private $editableTemplates;
 
 	/**
-	 * @param string string $theme
-	 * @param string string $path
+	 * @param string $theme
+	 * @param string $path
 	 */
 	public function __construct($theme, $path) {
 		$this->theme = $theme;
@@ -57,7 +57,7 @@ class MailTemplate extends \OC_Template {
 	
 	/**
 	 * @return \OCA\TemplateEditor\Http\MailTemplateResponse
-	 * @throws \OC\AppFramework\Middleware\Security\SecurityException
+	 * @throws \Exception
 	 */
 	public function getResponse() {
 		if($this->isEditable()) {
@@ -66,21 +66,10 @@ class MailTemplate extends \OC_Template {
 			list(, $template) = $this->findTemplate($this->theme, $app, $name);
 			return new MailTemplateResponse($template);
 		}
-		throw new SecurityException('Template not editable.', 403);
+		throw new \Exception('Template not editable.', 403);
 	}
 
-	public function renderContent() {
-		if($this->isEditable()) {
-			list($app, $filename) = explode('/templates/', $this->path, 2);
-			$name = substr($filename, 0, -4);
-			list(, $template) = $this->findTemplate($this->theme, $app, $name);
-			\OC_Response::sendFile($template);
-		} else {
-			throw new SecurityException('Template not editable.', 403);
-		}
-	}
-
-	public function isEditable() {
+	protected function isEditable() {
 		if (isset($this->editableThemes[$this->theme])
 			&& isset($this->editableTemplates[$this->path])
 		) {
@@ -107,10 +96,10 @@ class MailTemplate extends \OC_Template {
 			//overwrite theme templates? use versions?
 			return file_put_contents($absolutePath, $data);
 		}
-		throw new SecurityException('Template not editable.', 403);
+		throw new \Exception('Template not editable.', 403);
 	}
 
-	public function reset(){
+	public function reset() {
 		if($this->isEditable()) {
 			$absolutePath = \OC::$SERVERROOT.'/themes/'.$this->theme.'/'.$this->path;
 			if ($this->theme === 'default') {
@@ -132,7 +121,7 @@ class MailTemplate extends \OC_Template {
 			}
 			return !file_exists($absolutePath);
 		}
-		throw new NotPermittedException('Template not editable.', 403);
+		throw new \Exception('Template not editable.', 403);
 	}
 
 	/**
@@ -177,10 +166,15 @@ class MailTemplate extends \OC_Template {
 			'settings/templates/email.new_user_plain_text.php' => $l10n->t('New user email (plain text fallback)'),
 		);
 
-		if (\OCP\App::isEnabled('activity')) {
-			$tmplPath = \OC_App::getAppPath('activity') . '/templates/email.notification.php';
-			$path = substr($tmplPath, strlen(\OC::$SERVERROOT) + 1);
-			$templates[$path] = $l10n->t('Activity notification mail');
+		$appManager = \OC::$server->getAppManager();
+		if ($appManager->isEnabledForUser('activity')) {
+			try {
+				$tmplPath = $appManager->getAppPath('activity') . '/templates/email.notification.php';
+				$path = substr($tmplPath, strlen(\OC::$SERVERROOT) + 1);
+				$templates[$path] = $l10n->t('Activity notification mail');
+			} catch (AppPathNotFoundException $e) {
+				// App not found, ignore and go on
+			}
 		}
 
 		return $templates;

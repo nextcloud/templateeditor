@@ -21,8 +21,6 @@
  *
  */
 
-\OC_Util::checkAdminUser();
-
 \OCP\Util::addStyle('templateeditor', 'settings-admin');
 \OCP\Util::addScript('templateeditor', 'settings-admin');
 

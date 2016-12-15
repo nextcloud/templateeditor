@@ -38,7 +38,7 @@ class AdminSettingsController extends ApiController {
 	/**
 	 * @param string $theme
 	 * @param string $template
-	 * @return \OCA\TemplateEditor\Http\MailTemplateResponse
+	 * @return \OCA\TemplateEditor\Http\MailTemplateResponse|JSONResponse
 	 */
 	public function renderTemplate( $theme, $template ) {
 		try {
