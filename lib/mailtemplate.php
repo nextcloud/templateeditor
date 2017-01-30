@@ -156,15 +156,11 @@ class MailTemplate extends Template  {
 	 */
 	public static function getEditableTemplates() {
 		$l10n = \OC::$server->getL10NFactory()->get('templateeditor');
-		$templates = array(
-			'core/templates/mail.php' => $l10n->t('Sharing email - public link shares (HTML)'),
-			'core/templates/altmail.php' => $l10n->t('Sharing email - public link shares (plain text fallback)'),
-			'core/templates/internalmail.php' => $l10n->t('Sharing email (HTML)'),
-			'core/templates/internalaltmail.php' => $l10n->t('Sharing email (plain text fallback)'),
+		$templates = [
 			'core/templates/lostpassword/email.php' => $l10n->t('Lost password mail'),
 			'settings/templates/email.new_user.php' => $l10n->t('New user email (HTML)'),
 			'settings/templates/email.new_user_plain_text.php' => $l10n->t('New user email (plain text fallback)'),
-		);
+		];
 
 		$appManager = \OC::$server->getAppManager();
 		if ($appManager->isEnabledForUser('activity')) {
@@ -172,6 +168,19 @@ class MailTemplate extends Template  {
 				$tmplPath = $appManager->getAppPath('activity') . '/templates/email.notification.php';
 				$path = substr($tmplPath, strlen(\OC::$SERVERROOT) + 1);
 				$templates[$path] = $l10n->t('Activity notification mail');
+			} catch (AppPathNotFoundException $e) {
+				// App not found, ignore and go on
+			}
+		}
+		if ($appManager->isEnabledForUser('sharebymail')) {
+			try {
+				$tmplPath = $appManager->getAppPath('sharebymail') . '/templates/mail.php';
+				$path = substr($tmplPath, strlen(\OC::$SERVERROOT) + 1);
+				$templates[$path] = $l10n->t('Sharing email - public link shares (HTML)');
+
+				$tmplPath = $appManager->getAppPath('sharebymail') . '/templates/altmail.php';
+				$path = substr($tmplPath, strlen(\OC::$SERVERROOT) + 1);
+				$templates[$path] = $l10n->t('Sharing email - public link shares (plain text fallback)');
 			} catch (AppPathNotFoundException $e) {
 				// App not found, ignore and go on
 			}
