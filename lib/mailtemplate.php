@@ -186,6 +186,12 @@ class MailTemplate extends Template  {
 			}
 		}
 
+		foreach ($templates as $template => $name) {
+			if (!file_exists($template)) {
+				unset($templates[$template]);
+			}
+		}
+
 		return $templates;
 	}
 }

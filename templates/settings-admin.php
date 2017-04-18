@@ -1,3 +1,4 @@
+<?php if (empty($_['editableTemplates'])) {return;} ?>
 <div class="section" id="mailTemplateSettings" >
 
 	<h2><?php p($l->t('Mail templates'));?></h2>
