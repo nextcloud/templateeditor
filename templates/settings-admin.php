@@ -2,6 +2,7 @@
 <div class="section" id="mailTemplateSettings" >
 
 	<h2><?php p($l->t('Mail templates'));?></h2>
+	<p class="settings-hint"><?php p($l->t('Directly adjust the text and code of the different notification mails sent out to users.')); ?></p>
 
 	<div class="actions">
 
